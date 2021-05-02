@@ -8,6 +8,7 @@
     font-size: 38px;
     font-weight: 700;
     text-align: center;
+    padding-top: 10px;
   }
 
   .jacket {
@@ -22,7 +23,7 @@
     z-index: 1;
   }
 
-  .button-slot {
+  .slot {
     position: absolute;
     left: 314px;
     width: 40px;
@@ -54,8 +55,29 @@
     height: 80px;
     z-index: 3;
 
-    &.react-draggable {
+    &.react-draggable:not(.matched) {
       cursor: grab;
+    }
+
+    &.matched {
+      transition: transform 500ms;
+
+      .button-cont {
+        transform: scale(0.78);
+        transition: transform 500ms;
+      }
+      .button-img,
+      .button-green {
+        opacity: 0;
+      }
+
+      .button-img {
+        transition: opacity 500ms;
+      }
+
+      .button-sewed {
+        opacity: 1;
+      }
     }
 
     .button-cont {
@@ -75,6 +97,7 @@
 
     .button-img {
       background-position: 0 0;
+      z-index: 1;
     }
 
     .button-sewed {
@@ -86,38 +109,108 @@
       background-position: -160px 0;
       opacity: 0;
     }
+  }
 
-    &.plate1 {
-      right: 100px;
-      top: 88px;
+  .num-rows {
+    display: none;
+    justify-content: center;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 10px;
+    background: #ddd;
+    border-radius: 0 0 15px 15px;
+    opacity: 0;
+    z-index: 10;
+
+    .btn-num {
+      font-size: 30px;
+      padding: 5px 15px;
+      margin: 0 10px;
+      background-color: #fff;
+      border-radius: 5px;
+      box-shadow: 0 1px 0 0 #4f4e4e;
+      cursor: pointer;
+
+      &:hover {
+        background: #eee;
+      }
     }
-    &.plate2 {
-      right: 380px;
-      top: 98px;
+  }
+
+  .right-answer {   
+    // @extend .btn-num;
+    position: absolute;
+    left: 0;
+    top: 0;
+    font-size: 30px;
+    padding: 5px 15px;
+    background-color: #00aaff;
+    border-radius: 5px;
+    opacity: 0;
+    z-index: 10;
+    transition: opacity 500ms;
+  }
+
+  &.all-matched {
+    .jacket,
+    .button-plate:not(.matched),
+    .slot,
+    .header {
+      opacity: 0;
+      transition: opacity 500ms;
     }
-    &.plate3 {
-      right: 212px;
-      top: 212px;
+
+    .num-rows {
+      display: flex;
+      opacity: 1;
+      transition: opacity 700ms;
+      transition-delay: 700ms;
     }
-    &.plate4 {
-      right: 294px;
-      top: 294px;
-    }
-    &.plate5 {
-      right: 8px;
-      top: 201px;
-    }
-    &.plate6 {
-      right: 130px;
-      top: 264px;
-    }
-    &.plate7 {
-      right: 212px;
-      top: 383px;
-    }
-    &.plate8 {
-      right: 100px;
-      top: 400px;
-    }
+  }
+}
+
+.end-animation {
+  display: flex;
+  
+  .title {
+    font-size: 32px;
+  }
+
+  .fruit {
+    background: url('./assets/img/play.svg')
+  }
+}
+
+.fade-out {
+  animation: fadeOut .5s forwards;
+  transition-timing-function: ease-in-out !important;
+}
+
+.fade-out-bottom {
+  animation: fadeOutBottom .5s forwards;
+  transition-timing-function: ease-in-out !important;
+}
+
+@keyframes fadeOutBottom {
+  0% {
+    transform: translate(0, 0);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(0, 50px);
+    opacity: 0;
+    display: none;
+  }
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    display: none;
   }
 }
