@@ -516,7 +516,6 @@ const App = () => {
       <div className="play-button-wall" ref={playWallElem}></div>
       <div
         className="play-button"
-        onTouchStart={handlePlay}
         onClick={handlePlay}
         ref={palyButtonElem}
       ></div>
