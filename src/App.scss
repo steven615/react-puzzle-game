@@ -153,6 +153,26 @@
     transition: opacity 500ms;
   }
 
+  .hint-wrong {
+    position: absolute;
+    font-size: 20px;
+    padding: 10px 20px;
+    background-color: #add9da;
+    border-radius: 7px;
+    z-index: 10;
+    display: none;
+
+    .corner {
+      position: absolute;
+      top: 15px;
+      right: -7px;
+      width: 15px;
+      height: 15px;
+      background-color: #add9da;
+      transform: rotate(45deg);
+    }
+  }
+
   &.all-matched {
     .jacket,
     .button-plate:not(.matched),
@@ -218,6 +238,10 @@
   }
 }
 
+.fade-in {
+  animation: fadeIn 0.5s linear forwards;
+}
+
 .fade-out {
   animation: fadeOut 0.5s forwards;
   transition-timing-function: ease-in-out !important;
@@ -238,6 +262,15 @@
 
 .shake {
   animation: shake 500ms linear forwards;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 @keyframes fadeOutBottom {
@@ -279,7 +312,7 @@
 
 @keyframes shake {
   25% {
-    transform: rotate(-45deg)
+    transform: rotate(-45deg);
   }
   75% {
     transform: rotate(30deg);

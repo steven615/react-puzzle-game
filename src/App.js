@@ -7,12 +7,13 @@ import Fruit from './assets/img/fruit.svg';
 import NumRows from './components/NumRows';
 
 const App = () => {
-  const [slotElemsRef, setSlotElemsRef] = useState([]);
+  const [slotElems, setSlotElems] = useState([]);
   const [selectedSlotElem, setSelectedSlotElem] = useState(null);
   const [matchedPlateElems, setMatchedPlateElems] = useState([]);
   const [matchedSlotElems, setMatchedSlotElems] = useState([]);
   const [isAllMatched, setIsAllMatched] = useState(false);
-  const [isRightAnswer, setIsRightAnswer] = useState(false);
+  const [isAllRightAnswer, setIsAllRightAnswer] = useState(null);
+  const [isRightAnswer, setIsRightAnswer] = useState('');
   const [selectedAnswerElem, setSelectedAnswerElem] = useState(null);
   const [isStarted, setIsStarted] = useState(false);
   const [isEnd, setIsEnd] = useState(false);
@@ -20,7 +21,8 @@ const App = () => {
   const rightAnswerElem = useRef(null);
   const numRowsElem = useRef(null);
   const fruitElem = useRef(null);
-
+  const hintWrongElem = useRef(null);
+  
   const [platePositions, setPlatePositions] = useState([
     {x: 986, y: 80},
     {x: 686, y: 160},
@@ -33,7 +35,7 @@ const App = () => {
   ]);
   const slotCount = 5;
   const plateCount = 8;
-  const offset = 40;
+  const slotOffset = 40;
   let draggingBtn = null;
 
   useEffect(() => {
@@ -75,10 +77,19 @@ const App = () => {
   }, [matchedPlateElems]);
 
   useEffect(() => {
-    if(isRightAnswer) {
+    if(!isStarted) return;
+    
+    if(isAllRightAnswer) {
       handleRightAnswer();
+      return;
     }
-  }, [isRightAnswer]);
+
+    if (!isAllRightAnswer) {
+      setTimeout(() => {
+        handleWrongAnswer();
+      }, 500);
+    }
+  }, [isAllRightAnswer]);
 
   useEffect(() => {
     if(!isEnd) return;
@@ -94,9 +105,9 @@ const App = () => {
   }, [isEnd]);
   
   const setRef = (ref) => {
-    if(!ref || slotElemsRef.length > 4) return;
+    if(!ref || slotElems.length > 4) return;
 
-    setSlotElemsRef(prev => {
+    setSlotElems(prev => {
       prev.push(ref);
       return prev;
     });
@@ -130,9 +141,10 @@ const App = () => {
     // Change the cursor to grabbing
     e.target.closest('.button-plate').style.cursor = 'grabbing';
   }
+
   const handleDrag = (e) => {
     draggingBtn = draggingBtn ? draggingBtn : e.target.closest('.button-plate');
-    slotElemsRef.map(elem => {
+    slotElems.map(elem => {
       elem.style.background = '#00000000';
       return null;
     });
@@ -183,7 +195,7 @@ const App = () => {
     // Get btn center x and y
     const buttonCenter = getCenterFromBounds(plateBtn.getBoundingClientRect());    
     // Find matchs slot
-    let slots = [...(slotElemsRef ?? [])];
+    let slots = [...(slotElems ?? [])];
     let isSelectedNew = false;
 
     slots.forEach(slot => {
@@ -207,12 +219,12 @@ const App = () => {
 
   const checkXOfSlot = (b, s) => {
     // Check the available when button exists the right side of the slot
-    if(s.x < b.x && s.x + offset > b.x) {
+    if(s.x < b.x && s.x + slotOffset > b.x) {
       return true;
     }
 
     // Check the available when button exists the left side of the slot
-    if(s.x > b.x && s.x - offset < b.x) {
+    if(s.x > b.x && s.x - slotOffset < b.x) {
       return true;
     }
 
@@ -221,27 +233,33 @@ const App = () => {
 
   const checkYOfSlot = (b, s) => {
     // Check the available when button exists the top of the slot
-    if(s.y > b.y && s.y - offset < b.y) {
+    if(s.y > b.y && s.y - slotOffset < b.y) {
       return true;
     }
 
     // Check the available when button exists the bottom of the slot
-    if(s.y < b.y && s.y + offset > b.y) {
+    if(s.y < b.y && s.y + slotOffset > b.y) {
       return true;
     }
 
     return false;
   }
 
-  const handleNumRowClick = (isRight, elem) => {
-    setIsRightAnswer(isRight);
-    setSelectedAnswerElem(elem);
+  const handleNumRowClick = (answer, elem) => {
+    if(isAllRightAnswer === null) {
+      setIsAllRightAnswer(prev => {
+        return answer === slotCount;
+      });
+
+      setSelectedAnswerElem(elem);
+    }
   }
+
   const handleRightAnswer = () => {
     const elem = rightAnswerElem.current;
     elem.innerText = selectedAnswerElem.innerText;
     let bounds = selectedAnswerElem.getBoundingClientRect();
-    elem.style.transform = `translate(${bounds.left - bounds.width - 2}px, ${bounds.y}px)`;
+    elem.style.transform = `translate(${bounds.left - bounds.width - 19}px, ${bounds.y}px)`;
     elem.style.opacity = 1;
 
     setTimeout(() => {
@@ -249,7 +267,7 @@ const App = () => {
       let x = headerBounds.width / 1.55 + headerBounds.x;
       let y = headerBounds.y + 10;
       elem.style.transition = 'transform 1000ms';
-      elem.style.transform = elem.style.transform = `translate(${x}px, ${y}px)`;
+      elem.style.transform = `translate(${x}px, ${y}px)`;
     }, 500);
 
     setTimeout(() => {
@@ -262,6 +280,28 @@ const App = () => {
     setTimeout(() => {
       runEndAnimation();
     }, 2500);
+  }
+
+  const handleWrongAnswer = () => {
+    headerElem.current.classList.add('fade-out');
+    numRowsElem.current.classList.add('fade-out-bottom');
+    setTimeout(() => {
+      numRowsElem.current.style.display = 'none';
+    }, 400);
+    
+    setTimeout(() => {
+      const position = slotElems[0].getBoundingClientRect();
+      const hintElem = hintWrongElem.current;
+      let offset = 180;
+      let top = position.top;
+      let left = position.left - hintElem.offsetWidth - position.width - offset;
+
+      hintElem.style.left = left + 'px';
+      hintElem.style.top = top + 'px';
+
+      hintElem.style.display = 'block';
+      hintElem.classList.add('fade-in');
+    }, 500);
   }
 
   const runEndAnimation = () => {
@@ -314,9 +354,9 @@ const App = () => {
     return rows;
   }
   
-
   return (
     <div className="App">
+      <button style={{position: 'absolute'}} onClick={() => {setIsStarted(true)}}>start</button>
       <div className={`board ${isAllMatched ? 'all-matched' : ''}`}>
         <div ref={headerElem} className="header">Sew the buttons on the jacket</div>
         <div className="jacket"></div>
@@ -329,6 +369,10 @@ const App = () => {
           ref={numRowsElem}
           />
         <div ref={rightAnswerElem} className="right-answer"></div>
+        <div ref={hintWrongElem} className="hint-wrong">
+          <div className="content">Tap to color</div>
+          <div className="corner"></div>
+        </div>
         { isEnd &&
           <div className="end-animation">
             <div>

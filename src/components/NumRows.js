@@ -3,15 +3,19 @@ import React from 'react';
 const NumRows = React.forwardRef((props, ref) => {
   const handleClick = (e) => {
     const target = e.target;
-    let clickedAnswer = target.innerText;
-
-    if(props.rightAnswer === Number(clickedAnswer)) {
-      props.onClick(true, target);
+    let clickedAnswer = Number(target.innerText);
+    
+    if(props.rightAnswer === clickedAnswer) {
+      props.onClick(clickedAnswer, target);
       target.style.background = '#90f73b';
     } else {
       target.style.background = '#f94e4e';
-      props.onClick(false);
+      props.onClick(clickedAnswer);
     }
+
+    setTimeout(() => {
+      target.style.removeProperty('background');
+    }, 700);
   }
 
   const getNumRows = () => {
