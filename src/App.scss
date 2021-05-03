@@ -139,7 +139,7 @@
     }
   }
 
-  .right-answer {   
+  .right-answer {
     // @extend .btn-num;
     position: absolute;
     left: 0;
@@ -173,24 +173,71 @@
 
 .end-animation {
   display: flex;
-  
-  .title {
-    font-size: 32px;
-  }
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+  align-items: center;
 
-  .fruit {
-    background: url('./assets/img/play.svg')
+  & > div {
+    position: relative;
+
+    .title {
+      font-size: 32px;
+      color: #00aaff;
+    }
+
+    .fruit {
+      width: 100px;
+      height: 100px;
+      position: absolute;
+      left: 0;
+      bottom: -20px;
+      z-index: 1;
+
+      img {
+        width: 100%;
+        height: 100%;
+        transform-origin: 50px 60px;
+      }
+    }
+
+    .mask {
+      position: absolute;
+      right: -200px;
+      bottom: -25px;
+      width: 400px;
+      height: 100px;
+      background: #fff;
+      animation: maskWidth 2s linear forwards;
+    }
   }
 }
 
 .fade-out {
-  animation: fadeOut .5s forwards;
+  animation: fadeOut 0.5s forwards;
   transition-timing-function: ease-in-out !important;
 }
 
 .fade-out-bottom {
-  animation: fadeOutBottom .5s forwards;
+  animation: fadeOutBottom 0.5s forwards;
   transition-timing-function: ease-in-out !important;
+}
+
+.bounce-left-right {
+  animation: bounceLeftRight 2s linear forwards;
+}
+
+.rotate {
+  animation: spin 700ms linear infinite;
+}
+
+.shake {
+  animation: shake 500ms linear forwards;
 }
 
 @keyframes fadeOutBottom {
@@ -212,5 +259,38 @@
   100% {
     opacity: 0;
     display: none;
+  }
+}
+
+@keyframes bounceLeftRight {
+  0% {
+    transform: translateX(-200px);
+  }
+  100% {
+    transform: translateX(200px);
+  }
+}
+
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes shake {
+  25% {
+    transform: rotate(-45deg)
+  }
+  75% {
+    transform: rotate(30deg);
+  }
+}
+
+@keyframes maskWidth {
+  0% {
+    width: 400px;
+  }
+  100% {
+    width: 0px;
   }
 }

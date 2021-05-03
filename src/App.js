@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import Draggable from 'react-draggable';
 
 import './App.scss';
+import Fruit from './assets/img/fruit.svg';
+
 import NumRows from './components/NumRows';
 
 const App = () => {
@@ -12,10 +14,12 @@ const App = () => {
   const [isAllMatched, setIsAllMatched] = useState(false);
   const [isRightAnswer, setIsRightAnswer] = useState(false);
   const [selectedAnswerElem, setSelectedAnswerElem] = useState(null);
-  const [isEnd, setIsEnd] = useState(true);
+  const [isStarted, setIsStarted] = useState(false);
+  const [isEnd, setIsEnd] = useState(false);
   const headerElem = useRef(null);
   const rightAnswerElem = useRef(null);
   const numRowsElem = useRef(null);
+  const fruitElem = useRef(null);
 
   const [platePositions, setPlatePositions] = useState([
     {x: 986, y: 80},
@@ -75,6 +79,19 @@ const App = () => {
       handleRightAnswer();
     }
   }, [isRightAnswer]);
+
+  useEffect(() => {
+    if(!isEnd) return;
+
+    setTimeout(() => {
+      fruitElem.current.firstChild.classList.remove('rotate');
+      fruitElem.current.firstChild.classList.add('shake');
+    }, 2000);
+    setTimeout(() => {
+      setIsEnd(false);
+      setIsStarted(false);
+    }, 4000);
+  }, [isEnd]);
   
   const setRef = (ref) => {
     if(!ref || slotElemsRef.length > 4) return;
@@ -261,7 +278,6 @@ const App = () => {
   }
 
   const getCenterFromBounds = (bounds) => {
-    // return { x: bounds.x, y: bounds.y}
     return { x: bounds.x + bounds.width / 2, y: bounds.y + bounds.height / 2}
   }
 
@@ -302,7 +318,7 @@ const App = () => {
   return (
     <div className="App">
       <div className={`board ${isAllMatched ? 'all-matched' : ''}`}>
-        {/* <div ref={headerElem} className="header">Sew the buttons on the jacket</div>
+        <div ref={headerElem} className="header">Sew the buttons on the jacket</div>
         <div className="jacket"></div>
         {getSlots()}
         {getPlates()}
@@ -312,12 +328,16 @@ const App = () => {
           onClick={handleNumRowClick}
           ref={numRowsElem}
           />
-        <div ref={rightAnswerElem} className="right-answer"></div> */}
+        <div ref={rightAnswerElem} className="right-answer"></div>
         { isEnd &&
           <div className="end-animation">
-            <div className="title">Great!</div>
-            <div className="fruit"></div>
-            <div className="mask"></div>
+            <div>
+              <div className="title">Great!</div>
+              <div className="fruit bounce-left-right" ref={fruitElem}>
+                <img src={Fruit} alt="Fruit" className="rotate" />
+              </div>
+              <div className="mask"></div>
+            </div>
           </div>
         }
       </div>
