@@ -218,6 +218,29 @@
   }
 }
 
+.play-button-wall {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1000;
+  background: #FFFFFF;
+  opacity: 0.8;
+}
+
+.play-button {
+  width: 220px;
+  height: 248px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 1000;
+  background-image: url('./assets/img/play1.svg');
+  background-repeat: no-repeat;
+  background-position: -440px 0;
+}
+
 .end-animation {
   display: flex;
   position: absolute;

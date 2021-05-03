@@ -20,6 +20,8 @@ const App = () => {
   const [wrongMode, setWrongMode] = useState(false);
   const [isRunningEndAnimation, setIsRunningEndAnimation] = useState(false);
   const boradElem = useRef(null);
+  const playWallElem = useRef(null);
+  const palyButtonElem = useRef(null);
   const headerElem = useRef(null);
   const rightAnswerElem = useRef(null);
   const numRowsElem = useRef(null);
@@ -77,7 +79,7 @@ const App = () => {
       showHeaderElem("How many buttons?");
       showNumRowElem();
     }, 500);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [matchedPlateElems]);
 
   useEffect(() => {
@@ -93,7 +95,7 @@ const App = () => {
         handleWrongAnswer();
       }, 500);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAllRightAnswer]);
 
   useEffect(() => {
@@ -108,6 +110,21 @@ const App = () => {
       setIsStarted(false);
     }, 4000);
   }, [isEnd]);
+
+  const handlePlay = () => {
+    const wallElem = playWallElem.current;
+    const playButton = palyButtonElem.current;
+
+    wallElem.classList.add('fade-out');
+    playButton.classList.add('fade-out');
+
+    setTimeout(() => {
+      wallElem.style.display = 'none';
+      console.log(wallElem)
+      playButton.style.display = 'none';
+    }, 500);
+    setIsStarted(true);
+  }
 
   const setRef = ref => {
     if (!ref || slotElems.length > 4) return;
@@ -326,9 +343,11 @@ const App = () => {
     let bounds = selectedAnswerElem.getBoundingClientRect();
     let boardBounds = board.getBoundingClientRect();
 
-    elem.style.transform = `translate(${bounds.x - boardBounds.x}px, ${bounds.y}px)`;
+    elem.style.transform = `translate(${bounds.x - boardBounds.x}px, ${
+      bounds.y
+    }px)`;
     elem.style.opacity = 1;
-    
+
     setTimeout(() => {
       let headerBounds = headerElem.current.getBoundingClientRect();
       let x = headerBounds.width / 1.4 + (boardBounds.x - headerBounds.x);
@@ -393,7 +412,7 @@ const App = () => {
       let top = position.top - slotIndex * 10;
       let hintElemWidth = 144;
       let left = position.left - boardBounds.left - hintElemWidth - offset;
-      
+
       hintElem.style.left = left + "px";
       hintElem.style.top = top + "px";
 
@@ -494,18 +513,17 @@ const App = () => {
 
   return (
     <div className="App">
-      <button
-        style={{ position: "absolute", zIndex: 1000 }}
-        onTouchStart={() => {
-          setIsStarted(true)
-        }}
-        onClick={() => {
-          setIsStarted(true);
-        }}
+      <div className="play-button-wall" ref={playWallElem}></div>
+      <div
+        className="play-button"
+        onTouchStart={handlePlay}
+        onClick={handlePlay}
+        ref={palyButtonElem}
+      ></div>
+      <div
+        className={`board ${isAllMatched ? "all-matched" : ""}`}
+        ref={boradElem}
       >
-        start
-      </button>
-      <div className={`board ${isAllMatched ? "all-matched" : ""}`} ref={boradElem}>
         <div ref={headerElem} className="header">
           Sew the buttons on the jacket
         </div>
