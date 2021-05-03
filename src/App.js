@@ -19,6 +19,7 @@ const App = () => {
   const [isEnd, setIsEnd] = useState(false);
   const [wrongMode, setWrongMode] = useState(false);
   const [isRunningEndAnimation, setIsRunningEndAnimation] = useState(false);
+  const boradElem = useRef(null);
   const headerElem = useRef(null);
   const rightAnswerElem = useRef(null);
   const numRowsElem = useRef(null);
@@ -273,7 +274,7 @@ const App = () => {
       return;
     }
 
-    if(!wrongMode && answer === slotCount) {
+    if (!wrongMode && answer === slotCount) {
       setTimeout(() => {
         runEndAnimation();
       }, 500);
@@ -287,7 +288,7 @@ const App = () => {
     });
 
     showHintLabelElem(rightAnswer);
-    
+
     if (answer !== slotCount) {
       hideNumRowElem();
       showHintWrongElem(rightAnswer);
@@ -296,7 +297,7 @@ const App = () => {
 
     hideHeaderElem();
     setTimeout(() => {
-      headerElem.current.classList.remove('green');
+      headerElem.current.classList.remove("green");
       showHeaderElem("How many buttons?");
     }, 600);
     setWrongMode(false);
@@ -318,16 +319,17 @@ const App = () => {
 
   const handleRightAnswer = () => {
     const elem = rightAnswerElem.current;
+    const board = boradElem.current;
     elem.innerText = selectedAnswerElem.innerText;
     let bounds = selectedAnswerElem.getBoundingClientRect();
-    elem.style.transform = `translate(${bounds.left - bounds.width - 19}px, ${
-      bounds.y
-    }px)`;
-    elem.style.opacity = 1;
+    let boardBounds = board.getBoundingClientRect();
 
+    elem.style.transform = `translate(${bounds.x - boardBounds.x}px, ${bounds.y}px)`;
+    elem.style.opacity = 1;
+    
     setTimeout(() => {
       let headerBounds = headerElem.current.getBoundingClientRect();
-      let x = headerBounds.width / 1.55 + headerBounds.x;
+      let x = headerBounds.width / 1.4 + (boardBounds.x - headerBounds.x);
       let y = headerBounds.y + 10;
       elem.style.transition = "transform 1000ms";
       elem.style.transform = `translate(${x}px, ${y}px)`;
@@ -368,8 +370,8 @@ const App = () => {
   const showHeaderElem = text => {
     const elem = headerElem.current;
     elem.innerText = text;
-    elem.style.animationDuration = '1s';
-    
+    elem.style.animationDuration = "1s";
+
     elem.classList.remove("fade-out");
     elem.classList.add("fade-in");
   };
@@ -477,7 +479,7 @@ const App = () => {
           position={platePositions[i - 1]}
           rightAnswer={rightAnswer}
           onClick={handlePlateClick}
-          className={isRunningEndAnimation ? 'fade-out' : ''}
+          className={isRunningEndAnimation ? "fade-out" : ""}
           index={i}
           key={i}
         />
@@ -496,7 +498,7 @@ const App = () => {
       >
         start
       </button>
-      <div className={`board ${isAllMatched ? "all-matched" : ""}`}>
+      <div className={`board ${isAllMatched ? "all-matched" : ""}`} ref={boradElem}>
         <div ref={headerElem} className="header">
           Sew the buttons on the jacket
         </div>
