@@ -387,11 +387,13 @@ const App = () => {
   const showHintWrongElem = (slotIndex = 0) => {
     setTimeout(() => {
       const position = slotElems[slotIndex].getBoundingClientRect();
+      const boardBounds = boradElem.current.getBoundingClientRect();
       const hintElem = hintWrongElem.current;
       let offset = 20;
       let top = position.top - slotIndex * 10;
-      let left = position.left - hintElem.offsetWidth - offset;
-
+      let hintElemWidth = 144;
+      let left = position.left - boardBounds.left - hintElemWidth - offset;
+      
       hintElem.style.left = left + "px";
       hintElem.style.top = top + "px";
 
@@ -494,6 +496,9 @@ const App = () => {
     <div className="App">
       <button
         style={{ position: "absolute", zIndex: 1000 }}
+        onTouchStart={() => {
+          setIsStarted(true)
+        }}
         onClick={() => {
           setIsStarted(true);
         }}
