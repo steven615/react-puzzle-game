@@ -43,6 +43,7 @@ const App = () => {
   let draggingBtn = null;
 
   useEffect(() => {
+    showHintWrongElem();
     if (matchedPlateElems.length !== slotCount) return;
     if (isAllMatched) return;
 
@@ -386,9 +387,9 @@ const App = () => {
     setTimeout(() => {
       const position = slotElems[slotIndex].getBoundingClientRect();
       const hintElem = hintWrongElem.current;
-      let offset = 180;
+      let offset = 20;
       let top = position.top - slotIndex * 10;
-      let left = position.left - hintElem.offsetWidth - position.width - offset;
+      let left = position.left - hintElem.offsetWidth - offset;
 
       hintElem.style.left = left + "px";
       hintElem.style.top = top + "px";
@@ -491,7 +492,7 @@ const App = () => {
   return (
     <div className="App">
       <button
-        style={{ position: "absolute" }}
+        style={{ position: "absolute", zIndex: 1000 }}
         onClick={() => {
           setIsStarted(true);
         }}
