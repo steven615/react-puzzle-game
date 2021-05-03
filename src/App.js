@@ -43,7 +43,6 @@ const App = () => {
   let draggingBtn = null;
 
   useEffect(() => {
-    showHintWrongElem();
     if (matchedPlateElems.length !== slotCount) return;
     if (isAllMatched) return;
 
@@ -78,6 +77,7 @@ const App = () => {
       showHeaderElem("How many buttons?");
       showNumRowElem();
     }, 500);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [matchedPlateElems]);
 
   useEffect(() => {
@@ -93,6 +93,7 @@ const App = () => {
         handleWrongAnswer();
       }, 500);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAllRightAnswer]);
 
   useEffect(() => {
