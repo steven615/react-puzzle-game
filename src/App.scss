@@ -3,12 +3,25 @@
   min-height: 560px;
   position: relative;
   margin: 0 auto;
+  padding-top: 60px;
 
   .header {
     font-size: 38px;
     font-weight: 700;
     text-align: center;
     padding-top: 10px;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    opacity: 1;
+    // transition-duration: 1s;
+
+    &.green {
+      top: calc(50% - 15vw);
+      text-align: right;
+      padding-right: 10vw;
+    }
   }
 
   .jacket {
@@ -77,6 +90,21 @@
 
       .button-sewed {
         opacity: 1;
+      }
+
+      &.green {
+        .button-sewed {
+          opacity: 0;
+          z-index: 100;
+        }
+
+        .button-sewed {
+          transition: opacity 500ms;
+        }
+
+        .button-green {
+          opacity: 1;
+        }
       }
     }
 
@@ -173,20 +201,19 @@
     }
   }
 
+  .hint-label {
+    position: absolute;
+    top: calc(50% - 8vw);
+    right: calc(50% - 16vw);
+    text-align: right;
+  }
+
   &.all-matched {
     .jacket,
     .button-plate:not(.matched),
-    .slot,
-    .header {
+    .slot {
       opacity: 0;
       transition: opacity 500ms;
-    }
-
-    .num-rows {
-      display: flex;
-      opacity: 1;
-      transition: opacity 700ms;
-      transition-delay: 700ms;
     }
   }
 }
@@ -242,14 +269,16 @@
   animation: fadeIn 0.5s linear forwards;
 }
 
+.fade-in-bottom {
+  animation: fadeInBottom 0.5s ease-in-out forwards;
+}
+
 .fade-out {
   animation: fadeOut 0.5s forwards;
-  transition-timing-function: ease-in-out !important;
 }
 
 .fade-out-bottom {
-  animation: fadeOutBottom 0.5s forwards;
-  transition-timing-function: ease-in-out !important;
+  animation: fadeOutBottom 0.5s ease-in-out forwards;
 }
 
 .bounce-left-right {
@@ -282,6 +311,17 @@
     transform: translate(0, 50px);
     opacity: 0;
     display: none;
+  }
+}
+
+@keyframes fadeInBottom {
+  0% {
+    transform: translate(0, 50px);
+    opacity: 0;
+  }
+  100% {
+    transform: translate(0, 0);
+    opacity: 1;
   }
 }
 
