@@ -1,10 +1,6 @@
 import React from 'react';
 import Draggable from 'react-draggable';
 
-import plateButtonPic from '../assets/img/plate.svg';
-import plateSewedButtonPic from '../assets/img/plate_sewed.svg';
-import plateGreenButtonPic from '../assets/img/plate_green.svg';
-
 /**
  * The component for Plate button
  * 
@@ -30,15 +26,9 @@ const PlateButton = (props) => {
   // default, sewed and green plate button
   const contElem =
     <div className="button-cont">
-      <div className="button-img">
-        <img src={plateButtonPic} alt="Plate button" />
-      </div>
-      <div className="button-sewed">
-        <img src={plateSewedButtonPic} alt="Plate sewed button" />
-      </div>
-      <div className="button-green">
-        <img src={plateGreenButtonPic} alt="Plate green button" />
-      </div>
+      <div className="button-img"></div>
+      <div className="button-sewed"></div>
+      <div className="button-green"></div>
     </div>;
 
   // If draggable
