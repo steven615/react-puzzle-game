@@ -82,6 +82,7 @@ const App = () => {
     setPlatePositions(() => {
       return newPositions;
     });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [screenWidth]);
 
   useEffect(() => {
