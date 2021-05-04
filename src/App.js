@@ -434,12 +434,16 @@ const App = () => {
     hideHeaderElem();
     hideHintLabelElem();
     hideNumRowElem();
-    rightAnswerElem.current.classList.add("fade-out");
+
+    if(rightAnswerElem.current.innerText) {
+      rightAnswerElem.current.classList.add("fade-out");
+    }
+
     matchedPlateElems.map((elem, i) => {
       elem.classList.add("fade-out");
       return null;
     });
-
+    
     setTimeout(() => {
       setIsEnd(true);
     }, 500);
