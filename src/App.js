@@ -101,10 +101,10 @@ const App = () => {
       ];
     }
 
+    // If the plate button is matched, keep matched slot index
     newPositions.forEach((item, i) => {
       item.slot = platePositions[i].slot;
     });
-    console.log(newPositions)
 
     setPlatePositions(() => {
       return newPositions;
@@ -683,6 +683,7 @@ const App = () => {
       let disabled = !isDraggable(i);
       let draggable = isStarted && isAllRightAnswer !== false;
       let position = platePositions[i - 1];
+      // If the plate button is matched, matched slot
       let slot = position.slot > 0 ? slotElems[position.slot - 1] : null;
       
       rows.push(

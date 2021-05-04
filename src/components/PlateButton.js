@@ -24,11 +24,12 @@ import Draggable from 'react-draggable';
 
 const PlateButton = (props) => {
   let position = props.position;
+  // matched slot elem
   let slot = props.slot;
   let screenWidth = Math.min(window.outerWidth, window.innerWidth);
 
   const getPosition = () => {
-    // set position of plate to matched slot - animation
+    // Get position of plate to matched slot
     let offsetX = 7;
     let offsetY = 66;
 
