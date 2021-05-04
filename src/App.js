@@ -1,36 +1,44 @@
+/**
+ * The main app
+ */
 import React, { useState, useEffect, useRef } from "react";
 
 import "./App.scss";
+
+// The fruit picture for end animation
 import fruitPic from "./assets/img/fruit.svg";
+// The play picture
 import playButtonPic from "./assets/img/play1.svg";
+// The jacket picture
 import jacketPic from "./assets/img/jacket.svg";
 
 import NumRows from "./components/NumRows";
 import PlateButton from "./components/PlateButton";
 
 const App = () => {
-  const [slotElems, setSlotElems] = useState([]);
-  const [selectedSlotElem, setSelectedSlotElem] = useState(null);
-  const [matchedPlateElems, setMatchedPlateElems] = useState([]);
-  const [matchedSlotElems, setMatchedSlotElems] = useState([]);
-  const [isAllMatched, setIsAllMatched] = useState(false);
-  const [isAllRightAnswer, setIsAllRightAnswer] = useState(null);
-  const [rightAnswer, setRightAnswer] = useState(1);
-  const [selectedAnswerElem, setSelectedAnswerElem] = useState(null);
-  const [isStarted, setIsStarted] = useState(false);
-  const [isEnd, setIsEnd] = useState(false);
-  const [wrongMode, setWrongMode] = useState(false);
-  const [isRunningEndAnimation, setIsRunningEndAnimation] = useState(false);
-  const boradElem = useRef(null);
-  const playWallElem = useRef(null);
-  const palyButtonElem = useRef(null);
-  const headerElem = useRef(null);
-  const rightAnswerElem = useRef(null);
-  const numRowsElem = useRef(null);
-  const fruitElem = useRef(null);
-  const hintWrongElem = useRef(null);
-  const hintLabelElem = useRef(null);
+  const [slotElems, setSlotElems] = useState([]); // The array of slot refs
+  const [selectedSlotElem, setSelectedSlotElem] = useState(null); // The slot ref of hovered plate button
+  const [matchedPlateElems, setMatchedPlateElems] = useState([]); // The array of matched plate button refs
+  const [matchedSlotElems, setMatchedSlotElems] = useState([]); //The array of matched slot refs
+  const [isAllMatched, setIsAllMatched] = useState(false); // Is all slots are matched with plate button
+  const [isAllRightAnswer, setIsAllRightAnswer] = useState(null); // Is the basic answer is right
+  const [rightAnswer, setRightAnswer] = useState(1); // In basic answer is wrong mode(hint mode), the right answer
+  const [selectedAnswerElem, setSelectedAnswerElem] = useState(null); // The selected answer ref in num rows
+  const [isStarted, setIsStarted] = useState(false); // Is game started
+  const [isEnd, setIsEnd] = useState(false); //Is game end
+  const [wrongMode, setWrongMode] = useState(false); // Is wrong mode(hint mode), when the basic answer is wrong
+  const [isRunningEndAnimation, setIsRunningEndAnimation] = useState(false); // That is true for running the end animation
+  const boradElem = useRef(null); // The game board ref
+  const playWallElem = useRef(null); // The play wall ref
+  const palyButtonElem = useRef(null); // The play button ref
+  const headerElem = useRef(null); // The header ref
+  const rightAnswerElem = useRef(null); // The basic right answer ref for animation
+  const numRowsElem = useRef(null); // The num rows ref
+  const fruitElem = useRef(null); // The fruit ref for end animation
+  const hintWrongElem = useRef(null); // The hint ref in wrong mode (Top to color)
+  const hintLabelElem = useRef(null); // The button count hint ref
 
+  // The initial plate buttons position
   const [platePositions, setPlatePositions] = useState([
     { x: 986, y: 80, slot: 0 },
     { x: 686, y: 160, slot: 0 },
@@ -41,11 +49,11 @@ const App = () => {
     { x: 700, y: 400, slot: 0 },
     { x: 840, y: 120, slot: 0 }
   ]);
-  const screenWidth = window.outerWidth;
-  const slotCount = 5;
-  const plateCount = 8;
-  const slotOffset = 40;
-  let draggingBtn = null;
+  const screenWidth = window.outerWidth; // window width for responsive
+  const slotCount = 5; // The total slot count
+  const plateCount = 8; // The total plate button count
+  const slotOffset = 40; // That is offset for select the slot, the plate button is there around the slot
+  let draggingBtn = null; // dragging button ref
 
   // Responsive plate btn position
   useEffect(() => {
@@ -82,21 +90,26 @@ const App = () => {
     setPlatePositions(() => {
       return newPositions;
     });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [screenWidth]);
 
+  // When the plate button is matched with the slot, ask the button count
   useEffect(() => {
     if (matchedPlateElems.length !== slotCount) return;
     if (isAllMatched) return;
 
     setIsAllMatched(true);
 
+    // For animation that gather the plate buttons.
     matchedPlateElems.map(elem => {
+      // The plate button index
       const plateIndex = elem.classList
         .toString()
         .match(/plate[0-9]/)[0]
         .match(/[0-9]/)[0];
+
       const prevPosition = platePositions[plateIndex - 1];
+
       let offset = 10;
       if (screenWidth <= 1024) {
         offset = 5;
@@ -104,6 +117,8 @@ const App = () => {
       if (screenWidth <= 768) {
         offset = 2;
       }
+
+      // The new position
       let position = {
         ...prevPosition,
         y: prevPosition.y - (prevPosition.slot - 1) * offset
@@ -121,8 +136,9 @@ const App = () => {
       }, 1000);
       return null;
     });
-    hideHeaderElem();
 
+    // Change the header
+    hideHeaderElem();
     setTimeout(() => {
       showHeaderElem("How many buttons?");
       showNumRowElem();
@@ -130,14 +146,17 @@ const App = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [matchedPlateElems]);
 
+  // When answer for basic
   useEffect(() => {
     if (!isStarted) return;
 
+    // If the basic answer is right
     if (isAllRightAnswer) {
       handleRightAnswer();
       return;
     }
 
+    // If the basic answer is wrong and not wrong mode
     if (!isAllRightAnswer && !wrongMode) {
       setTimeout(() => {
         handleWrongAnswer();
@@ -146,6 +165,7 @@ const App = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAllRightAnswer]);
 
+  // The end animation
   useEffect(() => {
     if (!isEnd) return;
 
@@ -159,6 +179,7 @@ const App = () => {
     }, 4000);
   }, [isEnd]);
 
+  // handle event that click the play button - for animation and game start
   const handlePlay = () => {
     const wallElem = playWallElem.current;
     const playButton = palyButtonElem.current;
@@ -173,6 +194,7 @@ const App = () => {
     setIsStarted(true);
   };
 
+  // When load, set slot elems
   const setRef = ref => {
     if (!ref || slotElems.length > 4) return;
 
@@ -182,6 +204,12 @@ const App = () => {
     });
   };
 
+  /**
+   * The plate button is draggable
+   * 
+   * @param {number} index - plate button index - 1, 2
+   * @returns true|false - draggable
+   */
   const isDraggable = index => {
     let draggable = true;
 
@@ -194,6 +222,12 @@ const App = () => {
     return draggable;
   };
 
+  /**
+   * If the slot is matched, can't match any other plate button
+   * 
+   * @param {number} index - slot index - 1, 2
+   * @returns true|false - matched
+   */
   const isMatchedSlot = index => {
     let isMatched = false;
 
@@ -206,32 +240,43 @@ const App = () => {
     return isMatched;
   };
 
+  // drag start
   const handleStart = e => {
     // Change the cursor to grabbing
     e.target.closest(".button-plate").style.cursor = "grabbing";
   };
 
+  // dragging
   const handleDrag = e => {
     draggingBtn = draggingBtn ? draggingBtn : e.target.closest(".button-plate");
+
+    // set default background of all slot elems
     slotElems.map(elem => {
       elem.style.background = "#00000000";
       return null;
     });
+
+    // Check there is match slot
     checkMatchSlot(draggingBtn);
+    // Change background of selected slot
     if (selectedSlotElem) {
       selectedSlotElem.style.background = "#00000050";
     }
   };
 
+  // drag stop
   const handleStop = e => {
+    // dragged plate button
     const plateBtn = draggingBtn
       ? draggingBtn
       : e.target.closest(".button-plate");
+
     const plateIndex = plateBtn.classList
       .toString()
       .match(/plate[0-9]/)[0]
       .match(/[0-9]/)[0];
 
+    // there is matched slot
     if (selectedSlotElem) {
       const slotIndex = Number(
         selectedSlotElem.classList
@@ -242,7 +287,10 @@ const App = () => {
 
       // Change the cursor to grab
       plateBtn.style.cursor = "default";
+      // Set background as default
       selectedSlotElem.style.background = "#00000000";
+
+      // set position of plate to matched slot - animation
       let offsetX = 7;
       let offsetY = 66;
       if (screenWidth <= 768) {
@@ -259,6 +307,8 @@ const App = () => {
         prev[plateIndex - 1] = newPosition;
         return prev;
       });
+
+      // Add matched plate and slot ref
       setMatchedPlateElems(prev => {
         return [...prev, plateBtn];
       });
@@ -266,9 +316,11 @@ const App = () => {
         return [...prev, selectedSlotElem];
       });
     } else {
+      // there isn't matched slot
       // Change the cursor to grab
       plateBtn.style.cursor = "grab";
 
+      // The plate button go back to original position
       plateBtn.style.transitionDuration = "1000ms";
       setTimeout(() => {
         plateBtn.style.removeProperty("transition-duration");
@@ -278,8 +330,9 @@ const App = () => {
     setSelectedSlotElem(null);
   };
 
+  // Check there is matched slot with dragging plate button
   const checkMatchSlot = plateBtn => {
-    // Get btn center x and y
+    // Get position x and y of center of plate button
     const buttonCenter = getCenterFromBounds(plateBtn.getBoundingClientRect());
     // Find matchs slot
     let slots = [...(slotElems ?? [])];
@@ -335,7 +388,9 @@ const App = () => {
     return false;
   };
 
+  // handle event that select answer
   const handleNumRowClick = (answer, elem) => {
+    // The basic answer is true or wrong
     if (isAllRightAnswer === null) {
       setIsAllRightAnswer(prev => {
         return answer === slotCount;
@@ -345,6 +400,7 @@ const App = () => {
       return;
     }
 
+    // The basic answer is true
     if (!wrongMode && answer === slotCount) {
       setTimeout(() => {
         runEndAnimation();
@@ -352,20 +408,26 @@ const App = () => {
       return;
     }
 
+    // The wrong mode(hint)
+    // answer is wrong, don't anything
     if (answer !== rightAnswer) return;
 
+    // Increase right answer one by one
     setRightAnswer(prev => {
       return prev + 1;
     });
 
+    // Show hint elem of button count with right button count
     showHintLabelElem(rightAnswer);
 
+    // With increase right answer until the answer is the same basic right answer, ask
     if (answer !== slotCount) {
       hideNumRowElem();
       showHintWrongElem(rightAnswer);
       return;
     }
 
+    // If answer is the same basci right answer, ask total count
     hideHeaderElem();
     setTimeout(() => {
       headerElem.current.classList.remove("green");
@@ -374,6 +436,7 @@ const App = () => {
     setWrongMode(false);
   };
 
+  // In wrong mode, the clicked plate to green button, ask green button count
   const handlePlateClick = e => {
     hideHintWrongElem();
 
@@ -388,16 +451,17 @@ const App = () => {
     }, 500);
   };
 
+  // The basic answer is right, end animation
   const handleRightAnswer = () => {
+    // The animaition of right answer elem
     const elem = rightAnswerElem.current;
     const board = boradElem.current;
     elem.innerText = selectedAnswerElem.innerText;
     let bounds = selectedAnswerElem.getBoundingClientRect();
     let boardBounds = board.getBoundingClientRect();
 
-    elem.style.transform = `translate(${bounds.x - boardBounds.x}px, ${
-      bounds.y
-    }px)`;
+    elem.style.transform = `translate(${bounds.x - boardBounds.x}px, ${bounds.y
+      }px)`;
     elem.style.opacity = 1;
 
     setTimeout(() => {
@@ -413,6 +477,7 @@ const App = () => {
       elem.style.transform = `translate(${x}px, ${y}px)`;
     }, 500);
 
+    // When finish the animation of right answer elem, hide num rows
     setTimeout(() => {
       hideNumRowElem();
     }, 2000);
@@ -422,6 +487,7 @@ const App = () => {
     }, 2500);
   };
 
+  // If the basic answer is wrong
   const handleWrongAnswer = () => {
     hideHeaderElem();
     hideNumRowElem();
@@ -429,13 +495,15 @@ const App = () => {
     setWrongMode(true);
   };
 
+  // The end animation
   const runEndAnimation = () => {
     setIsRunningEndAnimation(true);
     hideHeaderElem();
     hideHintLabelElem();
     hideNumRowElem();
 
-    if(rightAnswerElem.current.innerText) {
+    // Hide all elems
+    if (rightAnswerElem.current.innerText) {
       rightAnswerElem.current.classList.add("fade-out");
     }
 
@@ -443,7 +511,7 @@ const App = () => {
       elem.classList.add("fade-out");
       return null;
     });
-    
+
     setTimeout(() => {
       setIsEnd(true);
     }, 500);
@@ -453,6 +521,10 @@ const App = () => {
     }, 4000);
   };
 
+  /**
+   * Show header elem
+   * @param {string} text The header text
+   */
   const showHeaderElem = text => {
     const elem = headerElem.current;
     elem.innerText = text;
@@ -462,12 +534,18 @@ const App = () => {
     elem.classList.add("fade-in");
   };
 
+  // Hide header elem
   const hideHeaderElem = () => {
     const elem = headerElem.current;
     elem.classList.remove("fade-in");
     elem.classList.add("fade-out");
   };
 
+  /**
+   * Show hint wrong elem (top to color)
+   * 
+   * @param {number} slotIndex 
+   */
   const showHintWrongElem = (slotIndex = 0) => {
     setTimeout(() => {
       // Get bounding rect of that slot elem for show hint popup.
@@ -548,10 +626,16 @@ const App = () => {
     labelElem.classList.add("fade-out");
   };
 
+  /**
+   * Get center position from boundings
+   * @param {object} bounds  {x, y, width, height}
+   * @returns 
+   */
   const getCenterFromBounds = bounds => {
     return { x: bounds.x + bounds.width / 2, y: bounds.y + bounds.height / 2 };
   };
 
+  // Get jsx of slot
   const getSlots = () => {
     var rows = [];
     for (var i = 1; i <= slotCount; i++) {
@@ -566,6 +650,7 @@ const App = () => {
     return rows;
   };
 
+  // Get plates
   const getPlates = () => {
     var rows = [];
 
