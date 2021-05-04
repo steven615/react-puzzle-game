@@ -50,15 +50,29 @@ const App = () => {
     { x: 700, y: 400, slot: 0 },
     { x: 840, y: 120, slot: 0 }
   ]);
-  const screenWidth = window.outerWidth; // window width for responsive
+  const [screenWidth, setScreenWidth] = useState(window.outerWidth); // window width for responsive
   const slotCount = 5; // The total slot count
   const plateCount = 8; // The total plate button count
   const slotOffset = 40; // That is offset for select the slot, the plate button is there around the slot
 
+  // when windows resize, get window width
+  useEffect(() => {
+    window.addEventListener('resize',  () => {
+      setScreenWidth(Math.min(window.outerWidth, window.innerWidth));
+    });
+  }, []);
   // Responsive plate btn position
   useEffect(() => {
-    let newPositions = platePositions;
-
+    let newPositions = [
+      { x: 986, y: 80, slot: 0 },
+      { x: 686, y: 160, slot: 0 },
+      { x: 786, y: 240, slot: 0 },
+      { x: 900, y: 360, slot: 0 },
+      { x: 934, y: 200, slot: 0 },
+      { x: 986, y: 400, slot: 0 },
+      { x: 700, y: 400, slot: 0 },
+      { x: 840, y: 120, slot: 0 }
+    ];
     if (screenWidth <= 1024) {
       newPositions = [
         { x: 660, y: 80, slot: 0 },
@@ -86,6 +100,11 @@ const App = () => {
         { x: 300, y: jacketHeight + 60, slot: 0 }
       ];
     }
+
+    newPositions.forEach((item, i) => {
+      item.slot = platePositions[i].slot;
+    });
+    console.log(newPositions)
 
     setPlatePositions(() => {
       return newPositions;
@@ -663,7 +682,9 @@ const App = () => {
     for (var i = 1; i <= plateCount; i++) {
       let disabled = !isDraggable(i);
       let draggable = isStarted && isAllRightAnswer !== false;
-
+      let position = platePositions[i - 1];
+      let slot = position.slot > 0 ? slotElems[position.slot - 1] : null;
+      
       rows.push(
         <PlateButton
           draggable={draggable}
@@ -671,7 +692,8 @@ const App = () => {
           onDrag={handleDrag}
           onStop={handleStop}
           disabled={disabled}
-          position={platePositions[i - 1]}
+          position={position}
+          slot={slot}
           rightAnswer={rightAnswer}
           onClick={handlePlateClick}
           className={isRunningEndAnimation ? "fade-out" : ""}

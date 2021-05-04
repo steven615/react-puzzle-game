@@ -11,6 +11,7 @@ import Draggable from 'react-draggable';
  *  onStop={handleEvent}
  *  disabled={true|false} - If false, can't drag
  *  position={object} - Default position {x, y, slot} {100, 200, 1}
+ *  slot={ref} - If matched button, slot is matched slot ref
  *  onClick={handleEvent}
  *  rightAnswer={rightAnswer} - In wrong mode, hint right answer
  *  className={string} - Custom class names
@@ -22,6 +23,31 @@ import Draggable from 'react-draggable';
  */
 
 const PlateButton = (props) => {
+  let position = props.position;
+  let slot = props.slot;
+  let screenWidth = Math.min(window.outerWidth, window.innerWidth);
+
+  const getPosition = () => {
+    // set position of plate to matched slot - animation
+    let offsetX = 7;
+    let offsetY = 66;
+
+    if (screenWidth <= 768) {
+      offsetX = 1;
+      offsetY = 61;
+    }
+
+    return {
+      ...position,
+      x: slot.offsetLeft - offsetX,
+      y: slot.offsetTop - offsetY
+    };
+  }
+
+  if(slot) {
+    position = getPosition();
+  }
+  
   // The basic content of component
   // default, sewed and green plate button
   const contElem =
@@ -38,7 +64,7 @@ const PlateButton = (props) => {
       onDrag={props.onDrag}
       onStop={props.onStop}
       disabled={props.disabled}
-      position={props.position}>
+      position={position}>
       <div className={`button-plate plate${props.index} ${props.disabled ? 'matched' : ''}`}>
         {contElem}
       </div>
@@ -47,11 +73,11 @@ const PlateButton = (props) => {
 
   // If clickable
   // In the wrong mode, only clickable that hint answer button (Top to color).
-  let isClickable = props.rightAnswer === props.position.slot;
+  let isClickable = props.rightAnswer === position.slot;
 
   // position, cursor
   let styles = {
-    transform: `translate(${props.position.x}px, ${props.position.y}px)`,
+    transform: `translate(${position.x}px, ${position.y}px)`,
     cursor: isClickable ? 'pointer' : 'default'
   };
 
@@ -75,7 +101,7 @@ const PlateButton = (props) => {
   return <div
     className={classNames}
     style={styles}
-    data-slot-id={props.position.slot}
+    data-slot-id={position.slot}
     onClick={handleClick}
   >
     {contElem}
