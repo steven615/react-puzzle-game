@@ -28,6 +28,7 @@ const App = () => {
   const [isEnd, setIsEnd] = useState(false); //Is game end
   const [wrongMode, setWrongMode] = useState(false); // Is wrong mode(hint mode), when the basic answer is wrong
   const [isRunningEndAnimation, setIsRunningEndAnimation] = useState(false); // That is true for running the end animation
+  const [draggingBtn, setDraggingBtn] = useState(null); // dragging button ref
   const boradElem = useRef(null); // The game board ref
   const playWallElem = useRef(null); // The play wall ref
   const palyButtonElem = useRef(null); // The play button ref
@@ -53,7 +54,6 @@ const App = () => {
   const slotCount = 5; // The total slot count
   const plateCount = 8; // The total plate button count
   const slotOffset = 40; // That is offset for select the slot, the plate button is there around the slot
-  let draggingBtn = null; // dragging button ref
 
   // Responsive plate btn position
   useEffect(() => {
@@ -248,7 +248,13 @@ const App = () => {
 
   // dragging
   const handleDrag = e => {
-    draggingBtn = draggingBtn ? draggingBtn : e.target.closest(".button-plate");
+    let btn = e.target.closest(".button-plate");
+
+    if(!draggingBtn) {
+      setDraggingBtn(btn);
+    } else {
+      btn = draggingBtn;
+    }
 
     // set default background of all slot elems
     slotElems.map(elem => {
@@ -257,7 +263,7 @@ const App = () => {
     });
 
     // Check there is match slot
-    checkMatchSlot(draggingBtn);
+    checkMatchSlot(btn);
     // Change background of selected slot
     if (selectedSlotElem) {
       selectedSlotElem.style.background = "#00000050";
@@ -326,7 +332,7 @@ const App = () => {
         plateBtn.style.removeProperty("transition-duration");
       }, 1000);
     }
-    draggingBtn = null;
+    setDraggingBtn(null)
     setSelectedSlotElem(null);
   };
 
