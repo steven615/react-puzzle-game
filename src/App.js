@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 
 import "./App.scss";
-import Fruit from "./assets/img/fruit.svg";
+import fruitPic from "./assets/img/fruit.svg";
+import playButtonPic from "./assets/img/play1.svg";
+import jacketPic from "./assets/img/jacket.svg";
 
 import NumRows from "./components/NumRows";
 import PlateButton from "./components/PlateButton";
@@ -39,10 +41,48 @@ const App = () => {
     { x: 700, y: 400, slot: 0 },
     { x: 840, y: 120, slot: 0 }
   ]);
+  const screenWidth = window.outerWidth;
   const slotCount = 5;
   const plateCount = 8;
   const slotOffset = 40;
   let draggingBtn = null;
+
+  // Responsive plate btn position
+  useEffect(() => {
+    let newPositions = platePositions;
+
+    if (screenWidth <= 1024) {
+      newPositions = [
+        { x: 660, y: 80, slot: 0 },
+        { x: 622, y: 160, slot: 0 },
+        { x: 706, y: 240, slot: 0 },
+        { x: 600, y: 260, slot: 0 },
+        { x: 534, y: 200, slot: 0 },
+        { x: 492, y: 95, slot: 0 },
+        { x: 438, y: 45, slot: 0 },
+        { x: 465, y: 212, slot: 0 }
+      ];
+    }
+
+    if (screenWidth <= 768) {
+      let jacketWidth = (screenWidth / 100) * 75;
+      let jacketHeight = (screenWidth / 100) * 54;
+      newPositions = [
+        { x: jacketWidth + 10, y: 15, slot: 0 },
+        { x: jacketWidth + 40, y: 90, slot: 0 },
+        { x: jacketWidth + 20, y: jacketHeight + 100, slot: 0 },
+        { x: jacketWidth + 40, y: 350, slot: 0 },
+        { x: 185, y: jacketHeight + 50, slot: 0 },
+        { x: 10, y: jacketHeight + 95, slot: 0 },
+        { x: 100, y: jacketHeight + 45, slot: 0 },
+        { x: 300, y: jacketHeight + 60, slot: 0 }
+      ];
+    }
+
+    setPlatePositions(() => {
+      return newPositions;
+    });
+  }, [screenWidth]);
 
   useEffect(() => {
     if (matchedPlateElems.length !== slotCount) return;
@@ -56,9 +96,16 @@ const App = () => {
         .match(/plate[0-9]/)[0]
         .match(/[0-9]/)[0];
       const prevPosition = platePositions[plateIndex - 1];
+      let offset = 10;
+      if (screenWidth <= 1024) {
+        offset = 5;
+      }
+      if (screenWidth <= 768) {
+        offset = 2;
+      }
       let position = {
         ...prevPosition,
-        y: prevPosition.y - (prevPosition.slot - 1) * 10
+        y: prevPosition.y - (prevPosition.slot - 1) * offset
       };
 
       setPlatePositions(prev => {
@@ -115,16 +162,15 @@ const App = () => {
     const wallElem = playWallElem.current;
     const playButton = palyButtonElem.current;
 
-    wallElem.classList.add('fade-out');
-    playButton.classList.add('fade-out');
+    wallElem.classList.add("fade-out");
+    playButton.classList.add("fade-out");
 
     setTimeout(() => {
-      wallElem.style.display = 'none';
-      console.log(wallElem)
-      playButton.style.display = 'none';
+      wallElem.style.display = "none";
+      playButton.style.display = "none";
     }, 500);
     setIsStarted(true);
-  }
+  };
 
   const setRef = ref => {
     if (!ref || slotElems.length > 4) return;
@@ -196,10 +242,15 @@ const App = () => {
       // Change the cursor to grab
       plateBtn.style.cursor = "default";
       selectedSlotElem.style.background = "#00000000";
-
+      let offsetX = 7;
+      let offsetY = 66;
+      if (screenWidth <= 768) {
+        offsetX = 1;
+        offsetY = 61;
+      }
       let newPosition = {
-        x: selectedSlotElem.offsetLeft - 17,
-        y: selectedSlotElem.offsetTop - 78,
+        x: selectedSlotElem.offsetLeft - offsetX,
+        y: selectedSlotElem.offsetTop - offsetY,
         slot: slotIndex
       };
 
@@ -350,7 +401,12 @@ const App = () => {
 
     setTimeout(() => {
       let headerBounds = headerElem.current.getBoundingClientRect();
-      let x = headerBounds.width / 1.4 + (boardBounds.x - headerBounds.x);
+      let offset = 0;
+      if (screenWidth <= 1024) {
+        offset = screenWidth / 100;
+      }
+      let x =
+        headerBounds.width / 1.3 + (boardBounds.x - headerBounds.x) + offset;
       let y = headerBounds.y + 10;
       elem.style.transition = "transform 1000ms";
       elem.style.transform = `translate(${x}px, ${y}px)`;
@@ -386,6 +442,10 @@ const App = () => {
     setTimeout(() => {
       setIsEnd(true);
     }, 500);
+
+    setTimeout(() => {
+      window.location.reload();
+    }, 4000);
   };
 
   const showHeaderElem = text => {
@@ -405,13 +465,29 @@ const App = () => {
 
   const showHintWrongElem = (slotIndex = 0) => {
     setTimeout(() => {
+      // Get bounding rect of that slot elem for show hint popup.
       const position = slotElems[slotIndex].getBoundingClientRect();
+      // Get bounding rect of palyground board elem.
       const boardBounds = boradElem.current.getBoundingClientRect();
       const hintElem = hintWrongElem.current;
-      let offset = 20;
-      let top = position.top - slotIndex * 10;
+      let offsetX = 20;
+      let offsetY = 10;
+
+      offsetY = screenWidth <= 1024 ? 6 : offsetY;
+
+      offsetX = screenWidth <= 768 ? -30 : offsetX;
+      offsetY = screenWidth <= 768 ? 0 : offsetY;
+
+      // Get the hint wrong elem position left by slot position.
       let hintElemWidth = 144;
-      let left = position.left - boardBounds.left - hintElemWidth - offset;
+      let left = position.left - boardBounds.left - hintElemWidth - offsetX;
+
+      // Get the hint wrong elem position top by slot position
+      let top = position.top - slotIndex * offsetY;
+
+      // To the hint elem should be to the center of the slot elem.
+      // 29 is hint elem height.
+      top = screenWidth >= 768 ? top : top + (position.height - 29) / 2;
 
       hintElem.style.left = left + "px";
       hintElem.style.top = top + "px";
@@ -514,11 +590,9 @@ const App = () => {
   return (
     <div className="App">
       <div className="play-button-wall" ref={playWallElem}></div>
-      <div
-        className="play-button"
-        onClick={handlePlay}
-        ref={palyButtonElem}
-      ></div>
+      <div className="play-button" onClick={handlePlay} ref={palyButtonElem}>
+        <img src={playButtonPic} alt="" className="img" />
+      </div>
       <div
         className={`board ${isAllMatched ? "all-matched" : ""}`}
         ref={boradElem}
@@ -526,7 +600,9 @@ const App = () => {
         <div ref={headerElem} className="header">
           Sew the buttons on the jacket
         </div>
-        <div className="jacket"></div>
+        <div className="jacket">
+          <img src={jacketPic} alt="" />
+        </div>
         {getSlots()}
         {getPlates()}
 
@@ -546,7 +622,7 @@ const App = () => {
             <div>
               <div className="title">Great!</div>
               <div className="fruit bounce-left-right" ref={fruitElem}>
-                <img src={Fruit} alt="Fruit" className="rotate" />
+                <img src={fruitPic} alt="Fruit" className="rotate" />
               </div>
               <div className="mask"></div>
             </div>

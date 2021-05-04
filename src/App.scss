@@ -16,7 +16,6 @@
     right: 0;
     top: 0;
     opacity: 1;
-    // transition-duration: 1s;
 
     &.green {
       top: calc(50% - 15vw);
@@ -31,10 +30,12 @@
     height: 480px;
     left: 10px;
     top: 70px;
-    background-size: 651px 480px;
-    background-image: url("./assets/img/jacket.svg");
-    background-repeat: no-repeat;
     z-index: 1;
+
+    img {
+      width: 100%;
+      height: 100%;
+    }
   }
 
   .slot {
@@ -65,8 +66,8 @@
 
   .button-plate {
     position: absolute;
-    width: 80px;
-    height: 80px;
+    width: 60px;
+    height: 60px;
     z-index: 3;
 
     &.react-draggable:not(.matched) {
@@ -111,31 +112,27 @@
 
     .button-cont {
       position: relative;
-      width: 80px;
-      height: 80px;
+      width: 100%;
+      height: 100%;
 
       div {
         position: absolute;
-        width: 80px;
-        height: 80px;
-        background-image: url("./assets/img/plate.svg");
-        background-repeat: no-repeat;
-        background-size: 240px 80px;
+        width: 100%;
+        height: 100%;
+
+        img {
+          width: 100%;
+          height: 100%;
+        }
       }
     }
 
     .button-img {
-      background-position: 0 0;
       z-index: 1;
     }
 
-    .button-sewed {
-      background-position: -80px 0;
-      opacity: 0;
-    }
-
+    .button-sewed,
     .button-green {
-      background-position: -160px 0;
       opacity: 0;
     }
   }
@@ -226,7 +223,7 @@
   width: 100%;
   height: 100%;
   z-index: 1000;
-  background: #FFFFFF;
+  background: #ffffff;
   opacity: 0.8;
 }
 
@@ -234,13 +231,15 @@
   width: 220px;
   height: 248px;
   position: absolute;
-  left: 50%;
-  top: 50%;
+  left: calc(50% - 110px);
+  top: 250px;
   z-index: 1000;
-  background-image: url('./assets/img/play1.svg');
-  background-repeat: no-repeat;
-  background-position: -440px 0;
   cursor: pointer;
+
+  .img {
+    width: 100%;
+    height: 100%;
+  }
 }
 
 .end-animation {
@@ -285,11 +284,12 @@
       width: 400px;
       height: 100px;
       background: #fff;
-      animation: maskWidth 2s linear forwards;
+      animation: maskWidth400 2s linear forwards;
     }
   }
 }
 
+// Animation
 .fade-in {
   animation: fadeIn 0.5s linear forwards;
 }
@@ -307,7 +307,7 @@
 }
 
 .bounce-left-right {
-  animation: bounceLeftRight 2s linear forwards;
+  animation: bounceLeftRight400 2s linear forwards;
 }
 
 .rotate {
@@ -316,6 +316,153 @@
 
 .shake {
   animation: shake 500ms linear forwards;
+}
+
+@media screen and (max-width: 1024px) {
+  .play-button {
+    width: 100px;
+    height: 100px;
+    left: calc(50% - 50px);
+  }
+
+  .board {
+    .header.green {
+      top: calc(50% - 20vw);
+      padding-right: 6vw;
+    }
+    .hint-label {
+      top: calc(50% - 10vw);
+    }
+    .jacket {
+      width: 50vw;
+      height: auto;
+    }
+    .button-plate {
+      width: 6vw;
+      height: 6vw;
+    }
+    .slot {
+      left: 24.1vw;
+      width: 3.6vw;
+      height: 3.6vw;
+
+      &.slot1 {
+        top: calc(55px + 5vw);
+      }
+      &.slot2 {
+        top: calc(45px + 12vw);
+      }
+      &.slot3 {
+        top: calc(45px + 18vw);
+      }
+      &.slot4 {
+        top: calc(45px + 24vw);
+      }
+      &.slot5 {
+        top: calc(45px + 30vw);
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .board {
+    .header {
+      font-size: 24px;
+
+      &.green {
+        top: 0;
+        text-align: center;
+        padding-right: 0;
+      }
+    }
+    .jacket {
+      width: 75%;
+      left: 0;
+    }
+    .button-plate {
+      width: 8vw;
+      height: 8vw;
+
+      &.matched .button-cont {
+        transform: scale(0.95);
+      }
+    }
+    .slot {
+      left: 34vw;
+      width: 6vw;
+      height: 6vw;
+
+      &.slot1 {
+        top: calc(80px + 3vw);
+      }
+      &.slot2 {
+        top: calc(80px + 12vw);
+      }
+      &.slot3 {
+        top: calc(80px + 21.5vw);
+      }
+      &.slot4 {
+        top: calc(80px + 31vw);
+      }
+      &.slot5 {
+        top: calc(80px + 40vw);
+      }
+    }
+    .num-rows {
+      bottom: 30px;
+      left: 10px;
+      right: 10px;
+      .btn-num {
+        font-size: 16px;
+        padding: 5px 10px;
+        margin: 0 5px;
+      }
+    }
+    .right-answer {
+      font-size: 16px;
+      padding: 5px 10px;
+    }
+    .hint-wrong {
+      font-size: 14px;
+      padding: 5px 10px;
+
+      .corner {
+        top: 9px;
+        right: -5px;
+        width: 10px;
+        height: 10px;
+      }
+    }
+    .hint-label {
+      top: 50px;
+      right: 0;
+      left: 0;
+      text-align: center;
+    }
+  }
+  .end-animation > div {
+    .fruit {
+      width: 65px;
+      height: 65px;
+      bottom: -5px;
+
+      img {
+        width: 100%;
+        height: 100%;
+        transform-origin: 32.5px 40px;
+      }
+    }
+
+    .mask {
+      right: -50px;
+      width: 200px;
+      animation: maskWidth200 2s linear forwards;
+    }
+  }
+  .bounce-left-right {
+    animation: bounceLeftRight200 2s linear forwards;
+  }
 }
 
 @keyframes fadeIn {
@@ -360,12 +507,21 @@
   }
 }
 
-@keyframes bounceLeftRight {
+@keyframes bounceLeftRight400 {
   0% {
     transform: translateX(-200px);
   }
   100% {
     transform: translateX(200px);
+  }
+}
+
+@keyframes bounceLeftRight200 {
+  0% {
+    transform: translateX(-100px);
+  }
+  100% {
+    transform: translateX(100px);
   }
 }
 
@@ -384,9 +540,18 @@
   }
 }
 
-@keyframes maskWidth {
+@keyframes maskWidth400 {
   0% {
     width: 400px;
+  }
+  100% {
+    width: 0px;
+  }
+}
+
+@keyframes maskWidth200 {
+  0% {
+    width: 200px;
   }
   100% {
     width: 0px;
